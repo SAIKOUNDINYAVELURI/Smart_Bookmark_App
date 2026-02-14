@@ -8,7 +8,7 @@ export default function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let effect: any;
+    let effect: { destroy: () => void } | null = null;
 
     if (vantaRef.current) {
       effect = HALO({
@@ -17,10 +17,8 @@ export default function VantaBackground() {
         mouseControls: true,
         touchControls: true,
         gyroControls: false,
-
-        // 🔥 Premium Dark SaaS Look
-        baseColor: 0x6366f1, // Indigo
-        backgroundColor: 0x0b1120, // Deep dark
+        baseColor: 0x6366f1,
+        backgroundColor: 0x0b1120,
         amplitudeFactor: 1.2,
         size: 1.2,
         xOffset: 0.2,
@@ -28,7 +26,9 @@ export default function VantaBackground() {
     }
 
     return () => {
-      if (effect) effect.destroy();
+      if (effect) {
+        effect.destroy();
+      }
     };
   }, []);
 
