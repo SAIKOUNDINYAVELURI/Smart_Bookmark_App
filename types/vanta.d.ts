@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'vanta/dist/vanta.halo.min' {
   interface HALOOptions {
     el: HTMLElement;
