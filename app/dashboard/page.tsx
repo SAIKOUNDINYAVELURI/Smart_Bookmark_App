@@ -101,11 +101,21 @@ export default function Dashboard() {
   };
 
   const deleteBookmark = async (id: string) => {
-    if (!user) return;
+  if (!user) return;
 
-    await supabase.from("bookmarks").delete().eq("id", id);
+  const { error } = await supabase
+    .from("bookmarks")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id); // 🔥 Always scope by user
+
+  if (error) {
+    console.error(error.message);
+  } else {
     fetchBookmarks(user.id);
-  };
+  }
+};
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
