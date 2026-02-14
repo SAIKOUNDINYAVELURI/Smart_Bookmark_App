@@ -4,9 +4,16 @@ import { supabase } from "@/lib/supabase";
 
 export default function Login() {
   const handleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: process.env.NEXT_PUBLIC_SITE_URL + "/dashboard",
+      },
     });
+
+    if (error) {
+      console.error("Login error:", error.message);
+    }
   };
 
   return (
