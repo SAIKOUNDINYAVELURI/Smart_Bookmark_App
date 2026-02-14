@@ -107,3 +107,116 @@ svg#goo-filter {
 .blob-delete:hover {
   color: white;
 }
+@keyframes blob1 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes blob2 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(-40px, 40px) scale(1.05); }
+  66% { transform: translate(30px, -30px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes blob3 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-30px, -40px) scale(1.1); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob1 {
+  animation: blob1 20s infinite ease-in-out;
+}
+
+.animate-blob2 {
+  animation: blob2 25s infinite ease-in-out;
+}
+
+.animate-blob3 {
+  animation: blob3 30s infinite ease-in-out;
+}
+/* Smooth gradient movement */
+@keyframes gradientMove {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientMove 20s ease infinite;
+}
+
+/* Floating Orbs */
+@keyframes float1 {
+  0% { transform: translate(-20%, -10%) scale(1); }
+  50% { transform: translate(10%, 20%) scale(1.1); }
+  100% { transform: translate(-20%, -10%) scale(1); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(30%, -20%) scale(1); }
+  50% { transform: translate(-10%, 10%) scale(0.9); }
+  100% { transform: translate(30%, -20%) scale(1); }
+}
+
+@keyframes float3 {
+  0% { transform: translate(0%, 30%) scale(1); }
+  50% { transform: translate(20%, -10%) scale(1.15); }
+  100% { transform: translate(0%, 30%) scale(1); }
+}
+
+.animate-float1 {
+  top: -10%;
+  left: -10%;
+  animation: float1 18s ease-in-out infinite;
+}
+
+.animate-float2 {
+  bottom: -10%;
+  right: -5%;
+  animation: float2 22s ease-in-out infinite;
+}
+
+.animate-float3 {
+  top: 40%;
+  left: 30%;
+  animation: float3 25s ease-in-out infinite;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientMove 20s ease infinite;
+}
+
+@keyframes float1 {
+  0% { transform: translate(-20%, -10%) scale(1); }
+  50% { transform: translate(10%, 20%) scale(1.1); }
+  100% { transform: translate(-20%, -10%) scale(1); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(30%, -20%) scale(1); }
+  50% { transform: translate(-10%, 10%) scale(0.9); }
+  100% { transform: translate(30%, -20%) scale(1); }
+}
+
+.animate-float1 {
+  top: -10%;
+  left: -10%;
+  animation: float1 18s ease-in-out infinite;
+}
+
+.animate-float2 {
+  bottom: -10%;
+  right: -5%;
+  animation: float2 22s ease-in-out infinite;
+}

@@ -1,5 +1,5 @@
 import "./globals.css";
-import VantaBackground from "./components/VantaBackground";
+import AnimatedBackground from "./components/AnimatedBackground";
 
 export const metadata = {
   title: "Smart Bookmark App",
@@ -13,33 +13,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen text-white relative overflow-hidden">
-        {/* Vanta Background */}
-        <VantaBackground />
-
-        {/* Goo Filter */}
-        <svg id="goo-filter">
-          <defs>
-            <filter id="goo">
-              <feGaussianBlur
-                in="SourceGraphic"
-                stdDeviation="10"
-                result="blur"
-              />
-              <feColorMatrix
-                in="blur"
-                mode="matrix"
-                values="1 0 0 0 0  
-                        0 1 0 0 0  
-                        0 0 1 0 0  
-                        0 0 0 21 -7"
-                result="goo"
-              />
-              <feBlend in="SourceGraphic" in2="goo" />
-            </filter>
-          </defs>
-        </svg>
-
+      <body className="relative min-h-screen text-white overflow-hidden">
+        <AnimatedBackground />
         {children}
       </body>
     </html>
