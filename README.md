@@ -3,10 +3,9 @@
 A modern, real-time bookmark manager built using Next.js (App Router) and Supabase with Google OAuth authentication. Deployed on Vercel.
 
 ## Live Demo
+**Live URL:** https://smart-bookmark-app-nine-lake.vercel.app/
 
-**Live URL:** https://your-vercel-url.vercel.app
-
-**GitHub Repository:** https://github.com/yourusername/smart-bookmark
+**GitHub Repository:** https://github.com/SAIKOUNDINYAVELURI/Smart_Bookmark_App
 
 ## Overview
 
@@ -29,13 +28,14 @@ Smart Bookmark is a secure and real-time bookmark management application. Users 
 - Cross-tab synchronization
 
 ### Search
-- Client-side real-time filtering by bookmark title
+- Real-time filtering by bookmark title (case-insensitive)
 
 ### UI
 - Built with Tailwind CSS v4
-- Responsive layout
-- Animated background using Vanta.js
-- Custom animated buttons
+- Responsive layout (Mobile + Desktop optimized)
+- Animated gradient background
+- Custom animated blob buttons
+- Smooth loading animations
 
 ## Tech Stack
 
@@ -54,7 +54,7 @@ app/
     layout.tsx
     page.tsx
 components/
-    VantaBackground.tsx
+    AnimatedBackground.tsx
 lib/
     supabase.ts
 public/
@@ -89,13 +89,13 @@ Required:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-Configure in Vercel: Project → Settings → Environment Variables
+Configure in Vercel: Project → Settings → Environment Variables → Redeploy
 
 ## Local Development
 
 ```bash
-git clone https://github.com/yourusername/smart-bookmark.git
-cd smart-bookmark
+git clone https://github.com/SAIKOUNDINYAVELURI/Smart_Bookmark_App.git
+cd Smart_Bookmark_App
 npm install
 ```
 
@@ -127,7 +127,7 @@ Open http://localhost:3000
 | Environment variables not recognized | Added variables in Vercel settings and redeployed |
 | Google OAuth redirect mismatch | Configured correct production URL in Supabase |
 | Realtime not updating | Enabled Realtime for bookmarks table with user_id filter |
-| Vanta.js component conflicts | Moved animation logic into dedicated client component |
+| RLS blocking delete in production | Scoped delete queries using `.eq("user_id", user.id)` |
 
 ## Future Improvements
 
@@ -136,8 +136,8 @@ Open http://localhost:3000
 - Tag-based categorization
 - Pagination for large datasets
 - Server-side search
-- Analytics dashboard
+- Bookmark preview cards
 
 ## Key Takeaways
 
-This project demonstrates OAuth authentication, secure database design with RLS, real-time architecture, and production deployment workflows.
+This project demonstrates OAuth authentication, secure database design with RLS, real-time architecture, route protection, responsive UI design, and production deployment workflows.
