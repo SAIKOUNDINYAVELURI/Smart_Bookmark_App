@@ -220,3 +220,21 @@ svg#goo-filter {
   right: -5%;
   animation: float2 22s ease-in-out infinite;
 }
+@keyframes loadingWave {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+
+.animate-loadingWave {
+  animation: loadingWave 1.5s ease-in-out infinite;
+}
