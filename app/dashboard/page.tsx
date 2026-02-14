@@ -15,21 +15,34 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const [search, setSearch] = useState(""); // ✅ NEW
+  const [search, setSearch] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const router = useRouter();
 
-  const fetchBookmarks = async () => {
-    const { data, error } = await supabase
+  /* ==============================
+     FETCH BOOKMARKS (User Scoped)
+  ===============================*/
+  const fetchBookmarks = async (userId: string) => {
+    let query = supabase
       .from("bookmarks")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
+
+    if (search) {
+      query = query.ilike("title", `%${search}%`);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setBookmarks(data);
     }
   };
 
+  /* ==============================
+     AUTH + REALTIME
+  ===============================*/
   useEffect(() => {
     let channel: RealtimeChannel | null = null;
 
@@ -44,7 +57,7 @@ export default function Dashboard() {
       const currentUser = data.session.user;
       setUser(currentUser);
 
-      await fetchBookmarks();
+      await fetchBookmarks(currentUser.id);
 
       channel = supabase
         .channel("realtime-bookmarks")
@@ -57,7 +70,7 @@ export default function Dashboard() {
             filter: `user_id=eq.${currentUser.id}`,
           },
           () => {
-            fetchBookmarks();
+            fetchBookmarks(currentUser.id);
           },
         )
         .subscribe();
@@ -68,8 +81,11 @@ export default function Dashboard() {
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [router, search]); // 🔥 refetch when search changes
 
+  /* ==============================
+     ACTIONS
+  ===============================*/
   const addBookmark = async () => {
     if (!title || !url || !user) return;
 
@@ -81,10 +97,14 @@ export default function Dashboard() {
 
     setTitle("");
     setUrl("");
+    fetchBookmarks(user.id);
   };
 
   const deleteBookmark = async (id: string) => {
+    if (!user) return;
+
     await supabase.from("bookmarks").delete().eq("id", id);
+    fetchBookmarks(user.id);
   };
 
   const handleLogout = async () => {
@@ -92,6 +112,9 @@ export default function Dashboard() {
     router.push("/login");
   };
 
+  /* ==============================
+     USER INFO
+  ===============================*/
   const displayName =
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
@@ -102,11 +125,9 @@ export default function Dashboard() {
     user?.user_metadata?.avatar_url ||
     `https://ui-avatars.com/api/?name=${displayName}`;
 
-  // ✅ Filtered Bookmarks
-  const filteredBookmarks = bookmarks.filter((bookmark) =>
-    bookmark.title.toLowerCase().includes(search.toLowerCase()),
-  );
-
+  /* ==============================
+     UI
+  ===============================*/
   return (
     <main className="min-h-screen p-10 text-white">
       {/* Header */}
@@ -135,7 +156,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Add Bookmark Section */}
+      {/* Add Bookmark */}
       <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-8 shadow-xl mb-10 space-y-6">
         <h2 className="text-xl font-semibold text-purple-300">Add Bookmark</h2>
 
@@ -168,29 +189,26 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* 🔍 Search Bar */}
-      <div className="mb-10">
-        <div className="relative max-w-md">
-          <input
-            type="text"
-            placeholder="Search bookmarks..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-3 pl-12 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition backdrop-blur-md"
-          />
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400">
-            🔍
-          </span>
-        </div>
+      {/* Search */}
+      <div className="mb-10 max-w-md">
+        <input
+          type="text"
+          placeholder="Search bookmarks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition"
+        />
       </div>
 
       {/* Bookmark Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBookmarks.length === 0 && (
-          <p className="text-white/40">No matching bookmarks found.</p>
+        {bookmarks.length === 0 && (
+          <p className="text-white/40">
+            {search ? "No matching bookmarks." : "No bookmarks yet."}
+          </p>
         )}
 
-        {filteredBookmarks.map((bookmark) => (
+        {bookmarks.map((bookmark) => (
           <div
             key={bookmark.id}
             className="group backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
