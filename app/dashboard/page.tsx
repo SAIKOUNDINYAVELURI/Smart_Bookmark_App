@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -24,23 +25,35 @@ export default function Dashboard() {
 
   const router = useRouter();
 
+  /* ================= DEBOUNCE SEARCH ================= */
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
   /* ================= FETCH ================= */
-  const fetchBookmarks = async (userId: string) => {
+
+  const fetchBookmarks = async (userId: string, searchValue = "") => {
     let query = supabase
       .from("bookmarks")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    if (search) {
-      query = query.ilike("title", `%${search}%`);
+    if (searchValue) {
+      query = query.ilike("title", `%${searchValue}%`);
     }
 
     const { data } = await query;
     if (data) setBookmarks(data);
   };
 
-  /* ================= AUTH ================= */
+  /* ================= AUTH + INITIAL LOAD ================= */
+
   useEffect(() => {
     let channel: RealtimeChannel | null = null;
 
@@ -69,7 +82,7 @@ export default function Dashboard() {
             table: "bookmarks",
             filter: `user_id=eq.${currentUser.id}`,
           },
-          () => fetchBookmarks(currentUser.id),
+          () => fetchBookmarks(currentUser.id, debouncedSearch),
         )
         .subscribe();
 
@@ -81,7 +94,15 @@ export default function Dashboard() {
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
-  }, [router, search]);
+  }, [router]);
+
+  /* ================= SEARCH EFFECT ================= */
+
+  useEffect(() => {
+    if (user) {
+      fetchBookmarks(user.id, debouncedSearch);
+    }
+  }, [debouncedSearch]);
 
   /* ================= ACTIONS ================= */
 
@@ -98,7 +119,8 @@ export default function Dashboard() {
 
     setTitle("");
     setUrl("");
-    await fetchBookmarks(user.id);
+
+    await fetchBookmarks(user.id, debouncedSearch);
 
     setIsSaving(false);
   };
@@ -114,16 +136,14 @@ export default function Dashboard() {
       .eq("id", id)
       .eq("user_id", user.id);
 
-    await fetchBookmarks(user.id);
+    await fetchBookmarks(user.id, debouncedSearch);
 
     setIsActionLoading(false);
   };
 
   const handleLogout = async () => {
     setIsActionLoading(true);
-
     await supabase.auth.signOut();
-
     router.push("/login");
   };
 
@@ -137,7 +157,7 @@ export default function Dashboard() {
     user?.user_metadata?.avatar_url ||
     `https://ui-avatars.com/api/?name=${displayName}`;
 
-  /* ================= FULL SCREEN LOADER ================= */
+  /* ================= FULL PAGE LOADER ================= */
 
   if (isLoading) {
     return <FullScreenLoader />;
@@ -145,7 +165,6 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* 🔥 Action Overlay Loader */}
       {isActionLoading && <FullScreenLoader />}
 
       <main className="min-h-screen px-4 sm:px-8 lg:px-16 py-8 text-white">
@@ -210,7 +229,7 @@ export default function Dashboard() {
             placeholder="Search bookmarks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-3 bg-white/10 border border-white/20 rounded-xl"
+            className="w-full p-3 bg-white/10 border border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
           />
         </div>
 
@@ -218,7 +237,7 @@ export default function Dashboard() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {bookmarks.length === 0 && (
             <p className="text-white/40">
-              {search ? "No matching bookmarks." : "No bookmarks yet."}
+              {debouncedSearch ? "No matching bookmarks." : "No bookmarks yet."}
             </p>
           )}
 
@@ -259,7 +278,7 @@ export default function Dashboard() {
   );
 }
 
-/* ================= LOADER COMPONENT ================= */
+/* ================= LOADER ================= */
 
 function FullScreenLoader() {
   return (
